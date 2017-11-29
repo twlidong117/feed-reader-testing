@@ -47,37 +47,30 @@ $(function() {
 
     /* TODO: 写一个叫做 "The menu" 的测试用例 */
     describe('The menu', function() {
+        let menuIcon = $('.menu-icon-link');
+        let body = $('body');
         /* TODO:
          * 写一个测试用例保证菜单元素默认是隐藏的。你需要分析 html 和 css
          * 来搞清楚我们是怎么实现隐藏/展示菜单元素的。
          */
         it('should be hidden after page loaded', function() {
-            expect($('body').hasClass('menu-hidden')).toBeTruthy();
+            expect(body.hasClass('menu-hidden')).toBeTruthy();
         });
 
-    });
-
-    /* TODO:
-     * 写一个测试用例保证当菜单图标被点击的时候菜单会切换可见状态。这个
-     * 测试应该包含两个 expectation ： 当点击图标的时候菜单是否显示，
-     * 再次点击的时候是否隐藏。
-     */
-    describe('The menu', function() {
-        let menuIcon = $('.menu-icon-link');
-        let body = $('body');
-        beforeEach(function(done) {
-            menuIcon.on('click', function() {
-                done();
-            });
+        /* TODO:
+         * 写一个测试用例保证当菜单图标被点击的时候菜单会切换可见状态。这个
+         * 测试应该包含两个 expectation ： 当点击图标的时候菜单是否显示，
+         * 再次点击的时候是否隐藏。
+         */
+        it('should change its visibility after menu icon clicked', function() {
             menuIcon.triggerHandler('click');
-        });
-        it('should be showed after menu icon clicked and should be hidder after menu icon clicked again', function(done) {
             expect(body.hasClass('menu-hidden')).toBeFalsy();
             menuIcon.triggerHandler('click');
             expect(body.hasClass('menu-hidden')).toBeTruthy();
-            done();
         });
+
     });
+
 
     /* TODO: 13. 写一个叫做 "Initial Entries" 的测试用例 */
     describe('Initial Entries', function() {
@@ -112,7 +105,7 @@ $(function() {
         });
         it('should change the contents of entries', function(done) {
             let newEntries = $('.feed .entry');
-            expect(oldEntries[0].innerText).not.toEqual(newEntries[0].innerText);
+            expect(oldEntries.text()).not.toEqual(newEntries.text());
             done();
         });
     });
