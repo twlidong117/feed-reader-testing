@@ -33,8 +33,14 @@ function init() {
  * 这个回调函数会在所有事情都成功完成之后被调用。
  */
 function loadFeed(id, cb) {
-    var feedUrl = allFeeds[id].url,
-        feedName = allFeeds[id].name;
+    try {
+        var feedUrl = allFeeds[id].url,
+            feedName = allFeeds[id].name;
+    } catch (e) {
+        if (id < 0 || id >= allFeeds.length) {
+            throw Error('array index out of bounds');
+        }
+    }
 
     $.ajax({
         type: "POST",
@@ -75,8 +81,14 @@ function loadFeed(id, cb) {
 }
 
 /* Google API: 加载 Feed Reader API 和定义当加载结束之后调用什么函数。*/
-google.load('feeds', '1');
-google.setOnLoadCallback(init);
+try {
+    google.load('feeds', '1');
+    google.setOnLoadCallback(init);
+} catch (e) {
+    if (google === undefined) {
+        throw Error('\'google\' is not defined');
+    }
+}
 
 /* 所有的这些功能都严重依赖 DOM 。所以把我们的代码放在 $ 函数里面以保证在 DOM
  * 构建完毕之前它不会被执行。
@@ -117,3 +129,8 @@ $(function() {
         $('body').toggleClass('menu-hidden');
     });
 }());
+
+// 未定义变量和数组越界错误处理
+window.onerror = function(msg, source, lineno, colno, error) {
+    console.error(`message:${msg}\nsource:${source}\nlineno:${lineno}\ncolno:${colno}\nerror:${error}`);
+};
