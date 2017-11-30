@@ -27,8 +27,9 @@ $(function() {
          */
         it('contain valid link for each source', function() {
             allFeeds.forEach(function(src) {
+                let urlreg = /^((ht|f)tps?):\/\/([\w\-]+(\.[\w\-]+)*\/)*[\w\-]+(\.[\w\-]+)*\/?(\?([\w\-\.,@?^=%&:\/~\+#]*)+)?/;
                 expect(src.url).toBeDefined();
-                expect(src.url).not.toEqual('');
+                expect(src.url).toMatch(urlreg);
             });
         });
 
@@ -39,7 +40,7 @@ $(function() {
         it('contain valid name for each source', function() {
             allFeeds.forEach(function(src) {
                 expect(src.name).toBeDefined();
-                expect(src.name).not.toEqual('');
+                expect(src.name).toBeTruthy();
             });
         });
     });
@@ -54,7 +55,7 @@ $(function() {
          * 来搞清楚我们是怎么实现隐藏/展示菜单元素的。
          */
         it('should be hidden after page loaded', function() {
-            expect(body.hasClass('menu-hidden')).toBeTruthy();
+            expect(body.hasClass('menu-hidden')).toBe(true);
         });
 
         /* TODO:
@@ -64,9 +65,9 @@ $(function() {
          */
         it('should change its visibility after menu icon clicked', function() {
             menuIcon.triggerHandler('click');
-            expect(body.hasClass('menu-hidden')).toBeFalsy();
+            expect(body.hasClass('menu-hidden')).toBe(false);
             menuIcon.triggerHandler('click');
-            expect(body.hasClass('menu-hidden')).toBeTruthy();
+            expect(body.hasClass('menu-hidden')).toBe(true);
         });
 
     });
@@ -84,9 +85,8 @@ $(function() {
         beforeEach(function(done) {
             loadFeed(0, done);
         });
-        it('should exist', function(done) {
+        it('should exist', function() {
             expect($('.feed .entry').length).not.toBe(0);
-            done();
         });
 
     });
@@ -98,15 +98,19 @@ $(function() {
          * 写一个测试保证当用 loadFeed 函数加载一个新源的时候内容会真的改变。
          * 记住，loadFeed() 函数是异步的。
          */
-        let oldEntries;
+        let oldEntries,
+            newEntries;
         beforeEach(function(done) {
-            oldEntries = $('.feed .entry');
-            loadFeed(1, done);
+            loadFeed(1, function() {
+                oldEntries = $('.feed .entry');
+                loadFeed(0, function() {
+                    newEntries = $('.feed .entry');
+                    done();
+                });
+            });
         });
-        it('should change the contents of entries', function(done) {
-            let newEntries = $('.feed .entry');
+        it('should change the contents of entries', function(d) {
             expect(oldEntries.text()).not.toEqual(newEntries.text());
-            done();
         });
     });
 
